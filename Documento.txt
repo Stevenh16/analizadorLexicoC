@@ -1,0 +1,23 @@
+#include<iostream>
+using namespace std;
+int BusquedaRecursiva(int v[20], int inicio, int fin, int db){
+	if(inicio<=fin){
+		if(v[inicio]==db){
+			return inicio;
+		}else{
+			return BusquedaRecursiva(v,inicio+1,fin,db);
+		}
+	}
+	return -1;
+}
+int main(){
+	int v[20]={1,6,4,7,8,3,0,5,32,12};
+	int max=9;
+	int posicion = BusquedaRecursiva(v,0,max,0);
+	if(posicion!=-1){
+		cout<<"Dato encontrado en la posicion: "<<posicion<<endl;
+	}else{
+		cout<<"Dato no encontrado."<<endl;
+	}
+	return 0;
+}
