@@ -1,23 +1,134 @@
+#ifndef _BICOLA
+#define _BICOLA
 #include<iostream>
-using namespace std;
-int BusquedaRecursiva(int v[20], int inicio, int fin, int db){
-	if(inicio<=fin){
-		if(v[inicio]==db){
-			return inicio;
+#include<string>
+typedef struct c{
+	int id, saldo, edad; 
+	std::string nombre;
+	std::string tipo; 
+}cliente;
+typedef cliente Tdato;
+typedef struct nodo{
+	Tdato dato;
+	struct nodo *sgt;
+	struct nodo *ant;
+}Nodo;
+Nodo * crearNodo(Nodo *a, Tdato d, Nodo *s){
+	Nodo *p=new Nodo;
+	p->dato=d;
+	p->sgt=s;
+	p->ant=a;
+	return p;
+}
+typedef struct bicola{
+	Nodo *fr;
+	Nodo *fin;
+	int tam;
+	void iniciar(){
+		fr=fin=NULL;
+		tam=0;
+	}
+	bool vacia(){
+		return fr==NULL || fin==NULL;
+	}
+	void insertar_frente(Tdato d){
+		if(vacia()){
+			fr=fin=crearNodo(NULL,d,NULL);
 		}else{
-			return BusquedaRecursiva(v,inicio+1,fin,db);
+			fr=crearNodo(NULL,d,fr);
+			fr->sgt->ant=fr;
+		}
+		tam++;
+	}
+	void insertar_final(Tdato d){
+		if(vacia()){
+			fr=fin=crearNodo(NULL,d,NULL);
+		}else{
+			fin=crearNodo(fin,d,NULL);
+			fin->ant->sgt=fin;
+		}
+		tam++;
+	}
+	Tdato quitar_frente(){
+		if(!vacia()){
+			Tdato tilin=fr->dato;
+			Nodo *p=fr;
+			fr=fr->sgt;
+			fr->ant=NULL;
+			delete(p);
+			tam--;
+			return tilin;
+		}
+		Tdato valorpredeterminado;
+		return valorpredeterminado;
+	}
+	Tdato quitar_final(){
+		if(!vacia()){
+			Tdato tilin=fin->dato;
+			Nodo *p=fin;
+			fin=fin->ant;
+			fin->sgt=NULL;
+			delete(p);
+			tam--;
+			return tilin;
+		}
+		Tdato valorpredeterminado;
+		return valorpredeterminado;
+	}
+	int tama(){
+		return tam;
+	}
+	Tdato datoFrente(){
+		if(!vacia()){
+			return fr->dato;
+		}
+		Tdato valorpredeterminado;
+		return valorpredeterminado;
+	}
+	Tdato datoFin(){
+		if(!vacia()){
+			return fin->dato;
+		}
+		Tdato valorpredeterminado;
+		return valorpredeterminado;
+	}
+	void insertar_pos(Tdato d, int pos){
+		if(!vacia()){
+			Nodo *p=fr;
+			for(int i=0;i<pos && p!=NULL;i++)
+				p=p->sgt;
+			if(p!=NULL){
+				Nodo *q=crearNodo(p->ant,d,p);
+				p->ant->sgt=q;
+				p->ant=q;
+				tam++;
+			}
 		}
 	}
-	return -1;
-}
-int main(){
-	int v[20]={1,6,4,7,8,3,0,5,32,12};
-	int max=9;
-	int posicion = BusquedaRecursiva(v,0,max,0);
-	if(posicion!=-1){
-		cout<<"Dato encontrado en la posicion: "<<posicion<<endl;
-	}else{
-		cout<<"Dato no encontrado."<<endl;
+	Tdato quitar_pos(int pos){
+		if(!vacia()){
+			Nodo *p=fr;
+			for(int i=0;i<pos && p!=NULL;i++)
+				p=p->sgt;
+			if(p!=NULL){
+				Tdato tilin=p->dato;
+				if(p->ant!=NULL){
+					p->ant->sgt=p->sgt;
+				}else{
+					fr=fr->sgt;
+				}
+				if(p->sgt!=NULL){
+					p->sgt->ant=p->ant;
+				}else{
+					fin=fin->ant;
+				}
+				tam--;
+				delete(p);
+				return tilin;
+			}
+		}
+		Tdato valorpredeterminado;
+		return valorpredeterminado;
 	}
-	return 0;
-}
+}Bicola;
+#endif

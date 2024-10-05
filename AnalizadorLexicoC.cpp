@@ -12,7 +12,7 @@ bool esDigito(char d){
 	return false;
 }
 bool esLetra(char l){
-	if((l>='A'&&l<='Z')||l>='a'&&l<='z'){
+	if((l>='A'&&l<='Z')||l>='a'&&l<='z'||l=='_'){
 		return true;
 	}
 	return false;
@@ -122,13 +122,15 @@ string nombreToken(string t){
     else if (esInt(t)) return "INT_NUM";
     else if (esFloat(t)) return "FLOAT_NUM";
     else if (esId(t)) return "ID";
+    else if (t == ":") return "DOTS";
+    else if (t == "'") return "QUOTER";
     return "NOTOKEN";
 }
 string mensaje(string t){
 	string token = nombreToken(t);
-	if(t=="\n") return "Token: "+token+" "+string(1,'"')+"\\n"+string(1,'"');
-	if(t=="\r") return "Token: "+token+" "+string(1,'"')+"\\r"+string(1,'"');
-	if(t=="\t") return "Token: "+token+" "+string(1,'"')+"\\t"+string(1,'"');
+	if(t=="\n" || t=="\\n") return "Token: "+token+" "+string(1,'"')+"\\n"+string(1,'"');
+	if(t=="\r" || t=="\\r") return "Token: "+token+" "+string(1,'"')+"\\r"+string(1,'"');
+	if(t=="\t" || t=="\\t") return "Token: "+token+" "+string(1,'"')+"\\t"+string(1,'"');
 	if(token!="NOTOKEN"){
 		return "Token: "+token+" "+string(1,'"')+t+string(1,'"');
 	}
@@ -138,7 +140,8 @@ bool esDelimitador(char c) {
     return isspace(c) || c == ';' || c == ',' || c == '(' || c == ')' ||
            c == '{' || c == '}' || c == '[' || c == ']' || c == '=' ||
            c == '+' || c == '-' || c == '*' || c == '/' || c == '<' ||
-           c == '>' || c == '&' || c == '|' || c == '!' ;
+           c == '>' || c == '&' || c == '|' || c == '!' || c== ':' ||
+		   c == '.' || c == '\'' ;
 }
 int main(){
 	string documento = lectorDocumento();
@@ -155,9 +158,45 @@ int main(){
 				c=documento[++i];
 			}
 			token+=c;
+			cout<<mensaje(token)<<endl;
+			token="";
 		}else{
 			if(esDelimitador(c)){
-				if(token.size()>0&&token!=" "){
+				if(c=='<'||c=='>'||c=='!'||c=='='){
+					if(documento[i+1]=='='){
+						//cout<<token<<"\n";
+						if(token!=""){
+							cout<<mensaje(token)<<endl;
+							token="";
+						}
+						cout<<mensaje(string(1,c)+string(1,documento[i+1]))<<endl;
+						c=' ';
+						i++;
+					}
+				}
+				if(c=='<'){
+					if(documento[i+1]=='<'){
+						if(token!=""){
+							cout<<mensaje(token)<<endl;
+							token="";
+						}
+						cout<<mensaje(string(1,c)+string(1,documento[i+1]))<<endl;
+						c=' ';
+						i++;
+					}
+				}
+				if(c=='>'){
+					if(documento[i+1]=='>'){
+						if(token!=""){
+							cout<<mensaje(token)<<endl;
+							token="";
+						}
+						cout<<mensaje(string(1,c)+string(1,documento[i+1]))<<endl;
+						c=' ';
+						i++;
+					}
+				}
+				if(token.size()>0){
 					//cout<<token<<"\n";
 					cout << mensaje(token) << endl;
 					token="";
@@ -168,7 +207,7 @@ int main(){
 			}else{
 				token+=c;
 			}
-		}
+		}	
 	}
 	if(token.size()>0){
 		cout << mensaje(token) << endl;
