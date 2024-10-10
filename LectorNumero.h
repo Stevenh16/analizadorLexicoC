@@ -3,10 +3,14 @@
 #include<iostream>
 #include<vector>
 #include<cctype>
+
+//Clase lector numero, encargada de leer un string y decidir si es un numero valido o no
 class LectorNumero{
 	private:
+		//Declaracion de la tabla (Automata)
 		std::vector<std::vector<int>> tabla;
 	public:
+		//Se inicializan los valores de la tabla
 		LectorNumero(){
 			tabla = std::vector<std::vector<int>>(7,std::vector<int>(4,1));
 			tabla[0][0] = 1;
@@ -38,6 +42,8 @@ class LectorNumero{
 	        tabla[6][2] = -1;
 	        tabla[6][3] = -1;
 		}
+		
+	//funcion que determina hacia que estado cambiar dependiendo del char de entrada
 	int simbolo(char a) {
         if (isdigit(a)) return 0;  
         switch (a) {
@@ -53,6 +59,7 @@ class LectorNumero{
         }
     }
 
+	//funcion encargada de pasar una cadena de texto char por char a valores de cambio de estados (int)
     std::vector<int> parseToInt(const std::string &s) {
         std::vector<int> numeros(s.length());
         for (size_t i = 0; i < s.length(); i++) {
@@ -61,6 +68,8 @@ class LectorNumero{
         return numeros;
     }
 
+
+	//funcion que verifica si es un numero o no
     bool isFloat(const std::string &s) {
         std::vector<int> numeros = parseToInt(s);
         int i = 0;

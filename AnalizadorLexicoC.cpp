@@ -4,19 +4,26 @@
 #include<sstream>
 #include<ctype.h>
 #include "LectorNumero.h"
+
 using namespace std;
+
+//función que verifica si un caracter es un numero
 bool esDigito(char d){
 	if(d>='0'&&d<='9'){
 		return true;
 	}
 	return false;
 }
+
+//función que verifica si un caracter es una letra
 bool esLetra(char l){
 	if((l>='A'&&l<='Z')||l>='a'&&l<='z'||l=='_'){
 		return true;
 	}
 	return false;
 }
+
+//función que verifica si un string es un int
 bool esInt(string i){
 	for(char d: i){
 		if(esDigito(d)==false){
@@ -25,10 +32,14 @@ bool esInt(string i){
 	}
 	return true;
 }
+
+//función que verifica si un string es un float
 bool esFloat(string f){
 	LectorNumero lector;
 	return lector.isFloat(f);
 }
+
+//función que verifica si una string es un ID
 bool esId(const string &id) {
     if (id.empty() || !esLetra(id[0])) return false;
     for (size_t i = 1; i < id.size(); i++) {
@@ -36,12 +47,16 @@ bool esId(const string &id) {
     }
     return true;
 }
+
+//funcion que lee el documento escrito en C
 string lectorDocumento(){
 	ifstream archivo("Documento.txt");
 	ostringstream buffer;
 	buffer<< archivo.rdbuf();
 	return buffer.str();
 }
+
+//función que segun un string retorna el nombre del token (Automata)
 string nombreToken(string t){
 	if (t == "auto") return "AUTO";
 	else if (t == "using") return "USING";
@@ -126,6 +141,8 @@ string nombreToken(string t){
     else if (t == "'") return "QUOTER";
     return "NOTOKEN";
 }
+
+//función que crea un mensaje con respecto al nombre del token
 string mensaje(string t){
 	string token = nombreToken(t);
 	if(t=="\n" || t=="\\n") return "Token: "+token+" "+string(1,'"')+"\\n"+string(1,'"');
@@ -136,6 +153,8 @@ string mensaje(string t){
 	}
 	return "ERROR: "+t;
 }
+
+//función para delimitar la toma de los string(Tokens)
 bool esDelimitador(char c) {
     return isspace(c) || c == ';' || c == ',' || c == '(' || c == ')' ||
            c == '{' || c == '}' || c == '[' || c == ']' || c == '=' ||
@@ -143,13 +162,14 @@ bool esDelimitador(char c) {
            c == '>' || c == '&' || c == '|' || c == '!' || c== ':' ||
 		   c == '.' || c == '\'' ;
 }
+
+//función principal, donde se encuentra toda la logica de seperacion de los token
 int main(){
 	string documento = lectorDocumento();
 	string token;
 	char c;
 	for(int i=0; i<documento.size();i++){
 		c=documento[i];
-		//cout<<c<<"\n";
 		if(c=='"'){
 			token+=c;
 			c=documento[++i];
@@ -164,7 +184,6 @@ int main(){
 			if(esDelimitador(c)){
 				if(c=='<'||c=='>'||c=='!'||c=='='){
 					if(documento[i+1]=='='){
-						//cout<<token<<"\n";
 						if(token!=""){
 							cout<<mensaje(token)<<endl;
 							token="";
@@ -197,7 +216,6 @@ int main(){
 					}
 				}
 				if(token.size()>0){
-					//cout<<token<<"\n";
 					cout << mensaje(token) << endl;
 					token="";
 				}
